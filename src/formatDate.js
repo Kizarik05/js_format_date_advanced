@@ -8,37 +8,33 @@
  * @returns {string}
  */
 function formatDate(date, fromFormat, toFormat) {
-  const oldDate = date.split(fromFormat[fromFormat.length - 1]);
+  const separatorFrom = fromFormat[fromFormat.length - 1];
+  const separatorTo = toFormat[toFormat.length - 1];
+
+  const parts = date.split(separatorFrom);
   const obj = {};
-  const result = [];
 
   for (let i = 0; i < fromFormat.length - 1; i++) {
-    const key = fromFormat[i];
-    const value = oldDate[i];
-
-    obj[key] = value;
+    obj[fromFormat[i]] = parts[i];
   }
 
-  for (let i = 0; i < fromFormat.length - 1; i++) {
-    const fromKey = fromFormat[i];
-    const toKey = toFormat[i];
+  const result = [];
 
-    if (fromKey === 'YY' && toKey === 'YYYY') {
-      if (obj['YY'] >= 30) {
-        result.push(`19${obj['YY']}`);
-      } else if (obj['YY'] < 30) {
-        result.push(`20${obj['YY']}`);
-      }
-    } else if (fromKey === 'YYYY' && toKey === 'YY') {
-      result.push(obj['YYYY'].slice(-2));
+  for (let i = 0; i < toFormat.length - 1; i++) {
+    const key = toFormat[i];
+
+    if (key === 'YYYY' && obj.YY) {
+      const yy = Number(obj.YY);
+
+      result.push(yy < 30 ? `20${obj.YY}` : `19${obj.YY}`);
+    } else if (key === 'YY' && obj.YYYY) {
+      result.push(obj.YYYY.slice(-2));
     } else {
-      result.push(obj[toKey]);
+      result.push(obj[key]);
     }
   }
 
-  const answer = result.join(toFormat[toFormat.length - 1]);
-
-  return answer;
+  return result.join(separatorTo);
 }
 
 module.exports = formatDate;
